@@ -1,0 +1,24 @@
+version: "3"
+services:
+    kafka_exporter:
+        image: danielqsj/kafka-exporter
+        command: --kafka.server=192.168.1.30:9092
+        
+    prometheus:
+        image: quay.io/prometheus/prometheus:latest
+        ports:
+          - "9090:9090"
+        volumes:
+          - ./config/prometheus.yml:/etc/prometheus/prometheus.yml:z
+        command: "--config.file=/etc/prometheus/prometheus.yml --storage.tsdb.path=/prometheus"
+   
+    grafana:
+        image: grafana/grafana
+        ports:
+          - "3000:3000"
+        volumes:
+          - grafana-db:/var/lib/grafana
+        depends_on:
+          - prometheus
+volumes:
+  grafana-db:
